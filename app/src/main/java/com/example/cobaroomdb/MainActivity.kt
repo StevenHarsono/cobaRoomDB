@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cobaroomdb.database.adapterDaftar
 import com.example.cobaroomdb.database.daftarBelanja
 import com.example.cobaroomdb.database.daftarBelanjaDB
+import com.example.cobaroomdb.database.historyBelanjaDB
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var DB: daftarBelanjaDB
+    private lateinit var DB_history: historyBelanjaDB
     private lateinit var adapterDaftar: adapterDaftar
     private var arDaftar : MutableList<daftarBelanja> = mutableListOf()
 
@@ -35,10 +37,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         val fabAdd = findViewById<FloatingActionButton>(R.id.fabAdd)
+        val fabHistory = findViewById<FloatingActionButton>(R.id.fabHistory)
 
         DB = daftarBelanjaDB.getDatabase(this)
+        DB_history = historyBelanjaDB.getDatabase(this)
         fabAdd.setOnClickListener {
             startActivity(Intent(this, TambahDaftar::class.java))
+        }
+        fabHistory.setOnClickListener {
+            startActivity(Intent(this, HistoryBelanja::class.java))
         }
 
         adapterDaftar = adapterDaftar(arDaftar)
@@ -55,6 +62,18 @@ class MainActivity : AppCompatActivity() {
                         withContext(Dispatchers.Main) {
                             adapterDaftar.isiData(daftar)
                         }
+                    }
+                }
+
+                override fun saveData(dtBelanja: daftarBelanja) {
+                    CoroutineScope(Dispatchers.IO).async {
+                        DB_history.funhistoryBelanjaDao().insert(dtBelanja)
+                        val daftar = DB.fundaftarBelanjaDAO().selectAll()
+                        withContext(Dispatchers.Main) {
+                            adapterDaftar.isiData(daftar)
+                        }
+
+                        DB.fundaftarBelanjaDAO().delete(dtBelanja)
                     }
                 }
             }

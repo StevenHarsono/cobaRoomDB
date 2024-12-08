@@ -26,6 +26,7 @@ RecyclerView.Adapter<adapterDaftar.ListViewHolder>(){
 
         var btnEdit = itemView.findViewById<FloatingActionButton>(R.id.buttonEdit)
         var btnDelete = itemView.findViewById<FloatingActionButton>(R.id.buttonDelete)
+        var btnSave = itemView.findViewById<FloatingActionButton>(R.id.buttonSave)
     }
 
     override fun onCreateViewHolder(
@@ -59,10 +60,15 @@ RecyclerView.Adapter<adapterDaftar.ListViewHolder>(){
         holder.btnDelete.setOnClickListener {
             onItemClickCallback.delData(daftar)
         }
+
+        holder.btnSave.setOnClickListener {
+            onItemClickCallback.saveData(daftar)
+        }
     }
 
     interface OnItemClickCallback {
         fun delData(dtBelanja: daftarBelanja)
+        fun saveData(dtBelanja: daftarBelanja)
     }
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback){
